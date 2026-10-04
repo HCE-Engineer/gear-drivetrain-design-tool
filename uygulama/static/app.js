@@ -157,7 +157,7 @@ const TYPES = [
 const LABELS = {
   z: 'Diş sayısı z', m: 'Modül m', m_t: 'Alın modülü mₜ', d0: 'Taksimat Ø d₀', da: 'Diş üstü Ø dₐ', df: 'Diş dibi Ø d_f',
   db: 'Temel Ø d_b', x: 'Profil kaydırma x', b: 'Genişlik b', a: 'Eksen mesafesi a', i: 'Çevrim oranı i',
-  eps_a: 'Kavrama oranı εα', 'β': 'Helis açısı β', 'δ': 'Koni açısı δ', 'δ1': 'Pinyon koni δ₁',
+  eps_a: 'Kavrama oranı εα', k: 'Baş kısaltma k', 'β': 'Helis açısı β', 'δ': 'Koni açısı δ', 'δ1': 'Pinyon koni δ₁',
   'δ2': 'Çark koni δ₂', 'Σ': 'Eksen açısı Σ', R: 'Koni mesafesi R', L: 'Boy L', 'γ': 'Helis (adım) açısı γ',
   v_per_rad: 'Kremayer yolu / rad', z_gezegen: 'Gezegen diş sayısı', n_gezegen: 'Gezegen adedi',
   'i_güneş_taşıyıcı': 'Oran güneş→taşıyıcı', 'η_tahmini': 'Verim η (tahmini)',
@@ -359,7 +359,7 @@ function renderReducer() {
       <div class="row-btns"><button class="btn sm" id="runSearch">En iyi 5 tasarımı ara</button></div>
       <div class="search-res" id="searchRes"></div>
     </details>
-    <p class="hint">Hesap: <b>files/reduktor.py</b> (MAKEL2, Akkurt/DIN). Geometri: <b>py_gearworks</b>.
+    <p class="hint">Hesap: <b>hesap/</b> paketi (Akkurt / DIN). Geometri: <b>py_gearworks</b>.
       Miller ve göbek delikleri hesaplanan mil çaplarından oluşturulur.</p>`;
 
   const bind = (k, fn) => {

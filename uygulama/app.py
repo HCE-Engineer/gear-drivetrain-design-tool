@@ -18,7 +18,15 @@ from collections import OrderedDict
 
 from flask import Flask, jsonify, request, send_from_directory, Response
 
-import motor
+# Windows konsolu varsayılan cp1252 -> Türkçe karakterlerde çökmesin
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
+import motor  # noqa: E402
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 

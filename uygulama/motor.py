@@ -3,7 +3,7 @@
 Çark Oluşturucu — geometri motoru.
 
 py_gearworks (build123d) ile 3B dişli katıları üretir; redüktör modunda
-files/reduktor.py hesap çekirdeğini (MAKEL2 / Akkurt-DIN) kullanır ve
+hesap/ paketindeki mukavemet hesabını (Akkurt / DIN yöntemi) kullanır ve
 hesaplanan kademeleri mil + göbek delikleriyle birlikte montaj olarak kurar.
 """
 
@@ -19,8 +19,8 @@ from typing import List, Optional
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-# py_gearworks: önce depodaki kopya (vendor/), yoksa orijinal indirme klasörü
-for _p in (os.path.join(ROOT, "files"),
+# proje kökü (hesap/ paketi) + py_gearworks: önce depodaki kopya (vendor/)
+for _p in (ROOT,
            os.path.join(ROOT, "py_gearworks-main", "py_gearworks-main", "src"),
            os.path.join(ROOT, "vendor")):
     if _p not in sys.path:
@@ -32,7 +32,7 @@ warnings.filterwarnings("ignore")
 import numpy as np
 import build123d as bd
 import py_gearworks as pgw
-import reduktor as rd
+import hesap as rd
 
 DEG = math.pi / 180.0
 PALETTE = ["#f59e0b", "#38bdf8", "#a78bfa", "#34d399", "#f472b6", "#fb7185",
@@ -221,10 +221,12 @@ def finish_gear(part, g, opt, warns, label):
 
 
 def _dxf_wire(g):
+    """2B diş profili, XY düzlemine (z = 0) indirilmiş halde."""
     try:
         g2 = g.copy()
         g2.reset_location()
-        return g2.build_boundary_wire()
+        w = g2.build_boundary_wire()
+        return w.moved(bd.Location((0, 0, -w.bounding_box().center().Z)))
     except Exception:
         return None
 
@@ -246,6 +248,18 @@ def _common(p):
         tip_fillet=_f(p, "tip_fillet", 0, 0, 0.5),
         crowning=_f(p, "crowning", 0, 0, 500),
     )
+
+
+def tip_shortening(z1, z2, x1, x2, alpha_n, beta=0.0):
+    """Baş kısaltma katsayısı k (x1+x2 ≠ 0 iken dip boşluğunu korumak için).
+    inv α_tw = inv α_t + 2·tan α_n·(x1+x2)/(z1+z2) ;  k = (x1+x2) − (a_w − a)/m_n"""
+    if abs(x1 + x2) < 1e-9:
+        return 0.0
+    at = math.atan(math.tan(alpha_n) / math.cos(beta))
+    atw = rd.inv_involute(rd.involute(at) + 2 * math.tan(alpha_n) * (x1 + x2) / (z1 + z2), at)
+    a_ref_m = (z1 + z2) / (2 * math.cos(beta))          # a / m_n
+    aw_m = a_ref_m * math.cos(at) / math.cos(atw)
+    return max(0.0, (x1 + x2) - (aw_m - a_ref_m))
 
 
 def _backlash_coef(p, m):
@@ -294,7 +308,10 @@ def build_duz(p, helical=False):
         if p.get("m_kind", "normal") == "alin":
             # girilen değer alın modülü mt -> py_gearworks normal modül ister
             c["module"] = m * math.cos(beta)
-    kw = dict(height=h, enable_undercut=_b(p, "undercut", True), z_anchor=0.5, **c)
+    k_sh = tip_shortening(z1, z2, x1, x2, c["pressure_angle"],
+                          beta if helical else 0.0) if pair else 0.0
+    kw = dict(height=h, enable_undercut=_b(p, "undercut", True), z_anchor=0.5,
+              addendum_coefficient=1.0 - k_sh, **c)
     if helical:
         herr = _b(p, "herringbone", False)
         g1 = pgw.HelicalGear(number_of_teeth=z1, helix_angle=beta, herringbone=herr,
@@ -319,7 +336,7 @@ def build_duz(p, helical=False):
         _add_gear(parts, warns, g2, "Dişli B", PALETTE[1], _gear_opts(p, "b_", h), r,
                   gear_dims(g2, dict(x=x2, b=h, **{k: (-v if k == "β" else v)
                                                    for k, v in extra.items()})))
-        summary = _pair_summary(g1, g2, r)
+        summary = _pair_summary(g1, g2, r, {"k": round(k_sh, 4)} if k_sh > 0 else None)
         if math.gcd(z1, z2) != 1:
             warns.append(f"Asal diş değil: ebob({z1},{z2})={math.gcd(z1, z2)} "
                          f"-> z2={z2 + 1} veya {z2 - 1} önerilir (aşınma dağılımı).")
@@ -744,7 +761,7 @@ def build_mil(p):
 
 
 # ------------------------------------------------------------------ #
-#  Redüktör (reduktor.py hesap + py_gearworks montaj)
+#  Redüktör (hesap/ paketi + py_gearworks montaj)
 # ------------------------------------------------------------------ #
 
 def reducer_cfg_from(p):
@@ -789,7 +806,8 @@ def _stage_gears(r, j):
     bl = j / max(r.mn, 1e-6)
     if r.gtype in ("duz", "helisel"):
         beta = r.beta * DEG
-        kw = dict(module=r.mn, height=r.b, z_anchor=0.5, backlash=bl / 2)
+        kw = dict(module=r.mn, height=r.b, z_anchor=0.5, backlash=bl / 2,
+                  addendum_coefficient=1.0 - r.k_short)
         if r.gtype == "helisel" and abs(beta) > 1e-6:
             g1 = pgw.HelicalGear(number_of_teeth=r.z1, helix_angle=beta,
                                  profile_shift=r.x1, **kw)
@@ -1000,7 +1018,7 @@ def build_reduktor(p):
     for r in results:
         for wmsg in r.warnings:
             warns.append(f"K{r.idx}: {wmsg}")
-    for wmsg in res.get("project_warnings", []):
+    for wmsg in res.get("system_warnings", []):
         warns.append(wmsg)
     stage_tbl = [dict(k=r.idx, tip=r.gtype, z1=r.z1, z2=r.z2, m=r.mn, b=round(r.b, 2),
                       a=round(r.a, 2), i=round(r.i_real, 3), σ=round(r.sigma1, 2),
@@ -1023,7 +1041,7 @@ def reducer_search(p):
 
 
 # ------------------------------------------------------------------ #
-#  Duyarlılık analizi (reduktor.py ile parametre taraması)
+#  Duyarlılık analizi (hesap/ paketi ile parametre taraması)
 # ------------------------------------------------------------------ #
 
 SWEEP_DEFS = {
@@ -1044,7 +1062,7 @@ def _sweep_metrics(param, r):
                 ("Kavrama oranı εα", "", r.eps_a, 1.1, "min", "εα ≥ 1,1")]
     if param == "beta":
         return [("Eksenel kuvvet Fa", "N", r.Fa, None, None, None),
-                ("Seçilen modül mₙ", "mm", r.mn, None, None, None),
+                ("Diş dibi gerilmesi σ₁", "N/mm²", r.sigma1, r.sigma_allow, "max", "σ_em / S"),
                 ("Örtüşme oranı εβ", "", r.eps_b, 1.0, "min", "εβ ≥ 1 önerilir")]
     if param == "q":
         return [("Verim η", "%", r.eta * 100, None, None, None),

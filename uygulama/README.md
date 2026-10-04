@@ -4,8 +4,8 @@ geargen.xyz tarzı dişli üretici: solda parametreler, ortada 3B önizleme + an
 sağda ölçüler / uyarılar / dışa aktarma.
 
 - **Geometri:** `py_gearworks` (build123d / OpenCascade) → gerçek B-rep katılar
-- **Redüktör hesabı:** `files/reduktor.py` (MAKEL2, Akkurt/DIN) — kod değiştirilmeden içe aktarılıyor
-- **Kamalı mil:** `mil_spline.py` profilinin parametrik hâli
+- **Redüktör hesabı:** proje kökündeki `hesap/` paketi (Akkurt / DIN)
+- **Kamalı mil:** `araclar/mil_spline.py` profilinin parametrik hâli
 
 ## Çalıştırma
 
@@ -32,7 +32,7 @@ python uygulama/app.py          # http://127.0.0.1:5050 açılır
 | Sonsuz vida | Çapraz helisel ile **yaklaşık** model (py_gearworks'te gerçek worm yok) |
 | Kamalı mil | 30° evolvent mil + boşluklu eş göbek |
 | Diferansiyel | Ayna + tahrik pinyonu, 2 aks dişlisi, 2/4 uydu; viraj (%) ile tekerlek hız farkı animasyonu |
-| Redüktör | reduktor.py hesabı → kademeler, miller, kamalı göbek delikleri, rapor, tasarım arama |
+| Redüktör | `hesap/` hesabı → kademeler, miller, kamalı göbek delikleri, rapor, tasarım arama |
 
 Her dişliye delik (dairesel / DIN 6885 kamalı / D-kesit / altıgen) ve göbek eklenebilir.
 
