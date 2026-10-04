@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 README grafiklerini üretir. Veri, uygulamadaki "Grafik" sekmesiyle aynı fonksiyondan
-(motor.sweep_analysis -> files/reduktor.py) gelir.
+(motor.sweep_analysis -> hesap/ paketi) gelir.
 
     pip install matplotlib      # yalnızca bu betik için gerekir
     python docs/grafik_uret.py
@@ -69,7 +69,7 @@ def ciz(stage, param, baslik, dosya):
         ax.set_title(p["name"] + (f"  ({p['unit']})" if p["unit"] else ""), loc="left",
                      fontsize=10.5, color=INK, pad=8)
         ax.set_xlabel(d["xlabel"] + (f" ({d['xunit']})" if d["xunit"] else ""))
-    fig.text(0.01, 0.015, "Kaynak: files/reduktor.py — her nokta tam kademe hesabıyla "
+    fig.text(0.01, 0.015, "Kaynak: hesap/ paketi (Akkurt / DIN) — her nokta tam kademe hesabıyla "
              "yeniden hesaplandı. Kırmızı bölge: emniyet sınırı dışında.",
              fontsize=8.5, color=INK2)
     fig.tight_layout(rect=(0, 0.06, 1, 0.94))

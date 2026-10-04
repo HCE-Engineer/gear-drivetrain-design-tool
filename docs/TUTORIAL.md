@@ -113,7 +113,7 @@ Redüktörü oluşturduktan sonra sağ paneldeki **Grafik** sekmesini aç.
 5. *Tablo olarak göster* düğmesi sayıları tablo halinde verir.
 
 **Örnek okuma:** x₁ taramasında diş dibi gerilmesi x₁ arttıkça düşer, ama diş ucu
-kalınlığı x₁ ≈ 0,57'de sivrilme sınırına iner. Demek ki bu kademede x₁'i 0,55'in
+kalınlığı x₁ ≈ 0,67'de sivrilme sınırına iner. Demek ki bu kademede x₁'i 0,65'in
 üzerine çıkarmamak gerekir; mevcut tasarım (x₁ = 0) üç sınırın da içinde.
 
 <br clear="right">

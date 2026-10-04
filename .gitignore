@@ -19,3 +19,4 @@ cad_out/
 
 # py_gearworks'ün indirilmiş tam deposu; kullanılan kaynak kod vendor/ altında
 py_gearworks-main/
+.pytest_cache/
