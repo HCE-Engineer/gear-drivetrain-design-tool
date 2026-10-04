@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
+
+# Editör / araç ayarları
+.claude/
+.vscode/
+.idea/
+
+# Büyük veya türetilmiş dosyalar (uygulama bunları istediğin an yeniden üretir)
+files.zip
+files/*.step
+files/*.stl
+cad_out/
+*.log
+
+# py_gearworks'ün indirilmiş tam deposu; kullanılan kaynak kod vendor/ altında
+py_gearworks-main/

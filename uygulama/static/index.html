@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Çark Oluşturucu</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='8' fill='none' stroke='%23f59e0b' stroke-width='4' stroke-dasharray='3 2.3'/%3E%3Ccircle cx='12' cy='12' r='3' fill='%23f59e0b'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/style.css">
+<script type="importmap">
+{ "imports": { "three": "/static/vendor/three.module.min.js" } }
+</script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <svg viewBox="0 0 24 24" class="logo"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="3 2.3"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></svg>
+    <div>
+      <div class="title">Çark Oluşturucu</div>
+      <div class="subtitle">py_gearworks geometri · MAKEL2 redüktör hesabı</div>
+    </div>
+  </div>
+  <div class="top-actions">
+    <span id="status" class="status">Hazır</span>
+    <button id="btnTheme" class="icon-btn" title="Açık / koyu tema">◐</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="panel" id="panel">
+    <nav class="types" id="types"></nav>
+    <form id="form" class="form" autocomplete="off" onsubmit="return false"></form>
+    <div class="build-row">
+      <label class="chk"><input type="checkbox" id="auto" checked> Otomatik güncelle</label>
+      <button id="btnBuild" class="btn primary">Oluştur</button>
+    </div>
+  </aside>
+
+  <main class="viewport" id="viewport">
+    <canvas id="canvas"></canvas>
+    <div class="overlay-tl" id="partsList"></div>
+    <div class="toolbar">
+      <button id="btnPlay" class="tb" title="Animasyon (Boşluk)">▶</button>
+      <input id="speed" type="range" min="0.05" max="3" step="0.05" value="0.6" title="Hız">
+      <span class="sep"></span>
+      <button id="btnFit" class="tb" title="Görünüme sığdır (F)">⤢</button>
+      <button id="btnTop" class="tb" title="Üstten bak">⊤</button>
+      <button id="btnEdges" class="tb on" title="Kenar çizgileri">▦</button>
+      <button id="btnWire" class="tb" title="Tel kafes">◇</button>
+      <button id="btnShot" class="tb" title="PNG ekran görüntüsü">📷</button>
+    </div>
+    <div class="loading" id="loading" hidden>
+      <div class="spinner"></div><div id="loadingText">Oluşturuluyor…</div>
+    </div>
+    <div class="toast" id="toast" hidden></div>
+  </main>
+
+  <aside class="info" id="info">
+    <div class="tabs">
+      <button class="tab on" data-tab="ozet">Özet</button>
+      <button class="tab" data-tab="grafik" id="tabGrafik" hidden>Grafik</button>
+      <button class="tab" data-tab="rapor" id="tabRapor" hidden>Rapor</button>
+    </div>
+    <div class="tabpane" id="pane-ozet">
+      <section class="card" id="exportCard">
+        <h3>Dışa aktar</h3>
+        <select id="expPart"><option value="all">Tüm parçalar</option></select>
+        <div class="exp-btns">
+          <button class="btn" data-fmt="stl">STL</button>
+          <button class="btn" data-fmt="step">STEP</button>
+          <button class="btn" data-fmt="dxf">DXF</button>
+          <button class="btn" data-fmt="3mf">3MF</button>
+        </div>
+        <p class="hint">STEP gerçek B-rep katıdır (yüzeyler pürüzsüz). DXF: 2B diş profili + delik.</p>
+      </section>
+      <section class="card" id="summaryCard"><h3>Çift / sistem</h3><div id="summary" class="kv"></div></section>
+      <section class="card" id="warnCard" hidden><h3>Uyarılar</h3><ul id="warnings" class="warns"></ul></section>
+      <section class="card" id="stageCard" hidden><h3>Kademeler</h3><div id="stages"></div></section>
+      <section class="card"><h3>Parçalar</h3><div id="partInfo"></div></section>
+    </div>
+    <div class="tabpane" id="pane-grafik" hidden>
+      <section class="card">
+        <h3>Duyarlılık analizi</h3>
+        <p class="hint" style="margin-top:0">Bir kademenin tek parametresi taranır; her nokta
+          <b>reduktor.py</b> ile yeniden hesaplanır.</p>
+        <div class="chart-ctl">
+          <select id="swStage" aria-label="Kademe"></select>
+          <select id="swParam" aria-label="Taranan parametre"></select>
+        </div>
+      </section>
+      <div class="chart-readout" id="swReadout" aria-live="polite">Grafiğin üzerine gelin</div>
+      <div id="charts"></div>
+      <button class="btn sm" id="swTable" style="margin-top:6px">Tablo olarak göster</button>
+      <div id="swTableBox" hidden></div>
+    </div>
+    <div class="tabpane" id="pane-rapor" hidden>
+      <div class="report-head"><button class="btn" id="btnReportDl">Raporu indir (.txt)</button></div>
+      <pre id="report" class="report"></pre>
+    </div>
+  </aside>
+</div>
+
+<script type="module" src="/static/app.js"></script>
+</body>
+</html>

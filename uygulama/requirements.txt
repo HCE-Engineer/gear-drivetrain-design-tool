@@ -1,0 +1,5 @@
+flask>=3.0
+build123d>=0.9.1
+numpy>=2,<3
+# py_gearworks yeni scipy (1.16+) ile bazı dişlerde (sonsuz vida, radyüs) hata veriyor
+scipy>=1.10.1,<1.16

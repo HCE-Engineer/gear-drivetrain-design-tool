@@ -1,0 +1,1 @@
+-r uygulama/requirements.txt
