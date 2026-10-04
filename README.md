@@ -88,7 +88,7 @@ aynısından üretilir.
 Gereksinim: Python 3.10+ (3.13 ile test edildi), Windows / Linux / macOS.
 
 ```bash
-git clone https://github.com/<kullanici-adin>/gear-drivetrain-design-tool.git
+git clone https://github.com/HCE-Engineer/gear-drivetrain-design-tool.git
 cd gear-drivetrain-design-tool
 pip install -r requirements.txt
 python uygulama/app.py
